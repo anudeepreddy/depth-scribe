@@ -1,0 +1,120 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter&family=Playfair+Display&family=Dancing+Script&family=Oswald&family=Merriweather&family=Pacifico&family=ABeeZee&family=Abel&family=Abril+Fatface&family=Acme&family=Alata&family=Albert+Sans&family=Alegreya&family=Alegreya+Sans&family=Alegreya+Sans+SC&family=Alfa+Slab+One&family=Alice&family=Almarai&family=Amatic+SC&family=Amiri&family=Antic+Slab&family=Anton&family=Architects+Daughter&family=Archivo&family=Archivo+Black&family=Archivo+Narrow&family=Arimo&family=Arsenal&family=Arvo&family=Asap&family=Asap+Condensed&family=Assistant&family=Barlow&family=Barlow+Condensed&family=Barlow+Semi+Condensed&family=Be+Vietnam+Pro&family=Bebas+Neue&family=Bitter&family=Black+Ops+One&family=Bodoni+Moda&family=Bree+Serif&family=Bungee&family=Cabin&family=Cairo&family=Cantarell&family=Cardo&family=Catamaran&family=Caveat&family=Chakra+Petch&family=Changa&family=Chivo&family=Cinzel&family=Comfortaa&family=Commissioner&family=Concert+One&family=Cookie&family=Cormorant&family=Cormorant+Garamond&family=Courgette&family=Crete+Round&family=Crimson+Pro&family=Crimson+Text&family=Cuprum&family=DM+Sans&family=DM+Serif+Display&family=DM+Serif+Text&family=Domine&family=Dosis&family=EB+Garamond&family=Eczar&family=El+Messiri&family=Electrolize&family=Encode+Sans&family=Encode+Sans+Condensed&family=Exo&family=Exo+2&family=Figtree&family=Fira+Sans&family=Fira+Sans+Condensed&family=Fjalla+One&family=Francois+One&family=Frank+Ruhl+Libre&family=Fraunces&family=Gelasio&family=Gloria+Hallelujah&family=Gothic+A1&family=Great+Vibes&family=Gruppo&family=Heebo&family=Hind&family=Hind+Madurai&family=Hind+Siliguri&family=IBM+Plex+Mono&family=IBM+Plex+Sans&family=IBM+Plex+Sans+Arabic&family=IBM+Plex+Sans+Condensed&family=IBM+Plex+Serif&family=Inconsolata&family=Indie+Flower&family=Inter+Tight&family=Josefin+Sans&family=Josefin+Slab&family=Jost&family=Kalam&family=Kanit&family=Karla&family=Kaushan+Script&family=Khand&family=Lato&family=League+Spartan&family=Lexend&family=Lexend+Deca&family=Libre+Barcode+39&family=Libre+Baskerville&family=Libre+Caslon+Text&family=Libre+Franklin&family=Lilita+One&family=Lobster&family=Lobster+Two&family=Lora&family=Luckiest+Guy&family=M+PLUS+1p&family=M+PLUS+Rounded+1c&family=Macondo&family=Manrope&family=Marcellus&family=Martel&family=Mate&family=Mate+SC&family=Maven+Pro&family=Merienda&family=Merriweather+Sans&family=Montserrat&family=Montserrat+Alternates&family=Mukta&family=Mulish&family=Nanum+Gothic&family=Nanum+Gothic+Coding&family=Nanum+Myeongjo&family=Neuton&family=Noticia+Text&family=Noto+Color+Emoji&family=Noto+Kufi+Arabic&family=Noto+Naskh+Arabic&family=Noto+Sans&family=Noto+Sans+Arabic&family=Noto+Sans+Bengali&family=Noto+Sans+Display&family=Noto+Sans+HK&family=Noto+Sans+JP&family=Noto+Sans+KR&family=Noto+Sans+Mono&family=Noto+Sans+SC&family=Noto+Sans+TC&family=Noto+Sans+Thai&family=Noto+Serif&family=Noto+Serif+JP&family=Noto+Serif+KR&family=Noto+Serif+TC&family=Nunito&family=Nunito+Sans&family=Old+Standard+TT&family=Oleo+Script&family=Open+Sans&family=Orbitron&family=Outfit&family=Overpass&family=Oxygen&family=PT+Sans&family=PT+Sans+Caption&family=PT+Sans+Narrow&family=PT+Serif&family=Pacifico&family=Passion+One&family=Pathway+Gothic+One&family=Patua+One&family=Paytone+One&family=Permanent+Marker&family=Philosopher&family=Play&family=Plus+Jakarta+Sans&family=Poppins&family=Prata&family=Prompt&family=Public+Sans&family=Quattrocento&family=Quattrocento+Sans&family=Questrial&family=Quicksand&family=Rajdhani&family=Raleway&family=Readex+Pro&family=Red+Hat+Display&family=Righteous&family=Roboto&family=Roboto+Condensed&family=Roboto+Flex&family=Roboto+Mono&family=Roboto+Serif&family=Roboto+Slab&family=Rokkitt&family=Rowdies&family=Rubik&family=Rubik+Bubbles&family=Rubik+Mono+One&family=Russo+One&family=Sacramento&family=Saira&family=Saira+Condensed&family=Sarabun&family=Satisfy&family=Sawarabi+Gothic&family=Sawarabi+Mincho&family=Sen&family=Shadows+Into+Light&family=Signika&family=Signika+Negative&family=Silkscreen&family=Six+Caps&family=Slabo+27px&family=Sora&family=Source+Code+Pro&family=Source+Sans+3&family=Source+Serif+4&family=Space+Grotesk&family=Space+Mono&family=Special+Elite&family=Spectral&family=Tajawal&family=Tangerine&family=Teko&family=Tinos&family=Titan+One&family=Titillium+Web&family=Ubuntu&family=Ubuntu+Condensed&family=Ubuntu+Mono&family=Unbounded&family=Unna&family=Urbanist&family=Varela+Round&family=Vollkorn&family=Work+Sans&family=Yanone+Kaffeesatz&family=Yantramanav&family=Yellowtail&family=Yeseva+One&family=Zen+Kaku+Gothic+New&family=Zeyada&family=Zilla+Slab&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ... */
+
+@layer base {
+  :root {
+
+    --background: 0 0% 100%;
+
+    --foreground: 240 10% 3.9%;
+
+    --card: 0 0% 100%;
+
+    --card-foreground: 240 10% 3.9%;
+
+    --popover: 0 0% 100%;
+
+    --popover-foreground: 240 10% 3.9%;
+
+    --primary: 240 5.9% 10%;
+
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 240 4.8% 95.9%;
+
+    --secondary-foreground: 240 5.9% 10%;
+
+    --muted: 240 4.8% 95.9%;
+
+    --muted-foreground: 240 3.8% 46.1%;
+
+    --accent: 240 4.8% 95.9%;
+
+    --accent-foreground: 240 5.9% 10%;
+
+    --destructive: 0 84.2% 60.2%;
+
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 240 5.9% 90%;
+
+    --input: 240 5.9% 90%;
+
+    --ring: 240 10% 3.9%;
+
+    --chart-1: 12 76% 61%;
+
+    --chart-2: 173 58% 39%;
+
+    --chart-3: 197 37% 24%;
+
+    --chart-4: 43 74% 66%;
+
+    --chart-5: 27 87% 67%;
+
+    --radius: 0.5rem
+  }
+  .dark {
+
+    --background: 240 10% 3.9%;
+
+    --foreground: 0 0% 98%;
+
+    --card: 240 10% 3.9%;
+
+    --card-foreground: 0 0% 98%;
+
+    --popover: 240 10% 3.9%;
+
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 0 0% 98%;
+
+    --primary-foreground: 240 5.9% 10%;
+
+    --secondary: 240 3.7% 15.9%;
+
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 240 3.7% 15.9%;
+
+    --muted-foreground: 240 5% 64.9%;
+
+    --accent: 240 3.7% 15.9%;
+
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 240 3.7% 15.9%;
+
+    --input: 240 3.7% 15.9%;
+
+    --ring: 240 4.9% 83.9%;
+
+    --chart-1: 220 70% 50%;
+
+    --chart-2: 160 60% 45%;
+
+    --chart-3: 30 80% 55%;
+
+    --chart-4: 280 65% 60%;
+
+    --chart-5: 340 75% 55%
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
