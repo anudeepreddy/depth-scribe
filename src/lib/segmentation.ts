@@ -21,12 +21,7 @@ export async function segmentPerson(
   imageElement: HTMLImageElement
 ): Promise<HTMLImageElement> {
   const segmentationModel = await loadSegmentationModel();
-  const segmentation = await segmentationModel.segmentPerson(imageElement, {
-    internalResolution: "high",
-    segmentationThreshold: 0.7,
-    maxDetections: 1,
-    scoreThreshold: 0.5,
-  });
+  const segmentation = await segmentationModel.segmentPerson(imageElement);
 
   const canvas = document.createElement("canvas");
   canvas.width = imageElement.width;

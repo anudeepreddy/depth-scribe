@@ -12,6 +12,10 @@ import {
 } from "@/components/ui/select"
 import { segmentPerson } from '@/lib/segmentation'
 import { LayeredCanvas, TextElement } from '@/lib/layeredcanvas'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Loader2, X } from 'lucide-react'
+import { Dialog, DialogContent } from '@/components/ui/dialog'
 
 const fontFamilies = [
     'Inter',
@@ -57,11 +61,12 @@ const fontFamilies = [
     "Yellowtail", "Yeseva One", "Zen Kaku Gothic New", "Zeyada", "Zilla Slab"
 ];
 
-const fontStyles = ['normal', 'italic', 'oblique'];
+const fontStyles = ['normal', 'italic'];
 const fontWeights = [100, 200, 300, 400, 500, 600, 700, 800, 900];
 
 export default function PhotoEditor() {
     const [image, setImage] = useState<HTMLImageElement | null>(null)
+    const [saving, setSaving] = useState(false)
     const subjectImageRef = useRef<HTMLImageElement | null>(null)
     const layeredCanvasRef = useRef<LayeredCanvas | null>(null)
     const [textElements, setTextElements] = useState<TextElement[]>([])
@@ -69,6 +74,7 @@ export default function PhotoEditor() {
     const [newText, setNewText] = useState('')
     const [isLoading, setIsLoading] = useState(false)
     const canvasRef = useRef<HTMLCanvasElement>(null)
+    const fileInputRef = useRef<HTMLInputElement>(null)
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -76,11 +82,13 @@ export default function PhotoEditor() {
             canvas.width = image.width;
             canvas.height = image.height;
             layeredCanvasRef.current = new LayeredCanvas(canvasRef.current);
+            layeredCanvasRef.current?.renderBackground(image)
             startSegmentation();
         }
     }, [image, canvasRef.current]);
 
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setIsLoading(true)
         const file = e.target.files?.[0]
         if (file) {
             const reader = new FileReader()
@@ -96,7 +104,6 @@ export default function PhotoEditor() {
     }
 
     const startSegmentation = async () => {
-        setIsLoading(true)
         const segmentedImg = await segmentPerson(image!)
         subjectImageRef.current = segmentedImg
         drawImage()
@@ -121,9 +128,9 @@ export default function PhotoEditor() {
         const newElement: TextElement = {
             id: Date.now(),
             text: newText,
-            fontSize: Math.max(12, Math.min(72, Math.floor(image.height / 20))),
-            fontFamily: 'Arial',
-            fontWeight: 400,
+            fontSize: Math.max(12, Math.max(72, Math.floor(image.height / 5))),
+            fontFamily: 'Inter',
+            fontWeight: 800,
             fontStyle: 'normal',
             position: { x: image.width / 2, y: image.height / 2 },
             color: '#000000',
@@ -149,6 +156,7 @@ export default function PhotoEditor() {
     }
 
     const saveImage = () => {
+        setSaving(true);
         const canvas = canvasRef.current
         if (!canvas) return
 
@@ -159,196 +167,253 @@ export default function PhotoEditor() {
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)
+        setSaving(false);
     }
 
     const selectedText = textElements.find(el => el.id === selectedTextId)
 
     const getMaxFontSize = () => {
-        return image ? Math.max(72, Math.floor(image.height / 5)) : 72
+        return image ? Math.max(72, Math.floor(image.height)) : 72
+    }
+
+    const handleRemoveFile = () => {
+        setImage(null)
+        setIsLoading(false)
+        if (fileInputRef.current) {
+            fileInputRef.current.value = ''
+        }
     }
 
     return (
-        <div className="container mx-auto p-4">
-            <h1 className="text-2xl font-bold mb-4">DepthScribe</h1>
-            <div className="mb-4">
-                <Input type="file" accept="image/*" onChange={handleImageUpload} />
-            </div>
-            {isLoading && <p>Processing image...</p>}
-            {image &&
-                (
-                    <div className="flex flex-col md:flex-row gap-4">
-                        <div className="flex-1">
-                            <canvas ref={canvasRef} className="max-w-full h-auto border border-gray-300" />
-                            <Button onClick={saveImage} className="mt-4">Save Image</Button>
-                        </div>
-                        <div className="flex-1 space-y-4 overflow-y-auto max-h-[80vh]">
-                            <div>
-                                <Label htmlFor="new-text">Add New Text</Label>
-                                <div className="flex gap-2">
-                                    <Input
-                                        id="new-text"
-                                        value={newText}
-                                        onChange={(e) => setNewText(e.target.value)}
-                                        placeholder="Enter text"
-                                    />
-                                    <Button onClick={addTextElement}>Add</Button>
-                                </div>
-                            </div>
-                            <div>
-                                <Label>Text Elements</Label>
-                                <Select value={selectedTextId?.toString()} onValueChange={(value) => setSelectedTextId(Number(value))}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select text to edit" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {textElements.map(el => (
-                                            <SelectItem key={el.id} value={el.id.toString()}>{el.text}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            {selectedText && (
-                                <>
-                                    <div>
-                                        <Label htmlFor="edit-text">Edit Text</Label>
-                                        <Input
-                                            id="edit-text"
-                                            value={selectedText.text}
-                                            onChange={(e) => updateTextElement(selectedText.id, { text: e.target.value })}
-                                        />
-                                    </div>
-                                    <div>
-                                        <Label htmlFor="font-size">Font Size</Label>
-                                        <Slider
-                                            id="font-size"
-                                            min={12}
-                                            max={getMaxFontSize()}
-                                            step={1}
-                                            value={[selectedText.fontSize]}
-                                            onValueChange={(value) => updateTextElement(selectedText.id, { fontSize: value[0] })}
-                                        />
-                                        <div className="text-sm text-gray-500 mt-1">
-                                            {selectedText.fontSize}px
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <Label htmlFor="opacity">Opacity</Label>
-                                        <Slider
-                                            id="opacity"
-                                            min={0}
-                                            max={1}
-                                            step={0.05}
-                                            value={[selectedText.opacity]}
-                                            onValueChange={(value) => updateTextElement(selectedText.id, { opacity: value[0] })}
-                                        />
-                                        <div className="text-sm text-gray-500 mt-1">
-                                            {selectedText.opacity}
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <Label htmlFor="font-family">Font Family</Label>
-                                        <Select
-                                            value={selectedText.fontFamily}
-                                            onValueChange={(value) => updateTextElement(selectedText.id, { fontFamily: value })}
-                                        >
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Select font" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {fontFamilies.map(font => (
-                                                    <SelectItem key={font} value={font} style={{ fontFamily: font }}>{font}</SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                    <div>
-                                        <Label htmlFor="font-weight">Font Weight</Label>
-                                        <Select
-                                            value={selectedText.fontWeight.toString()}
-                                            onValueChange={(value) => updateTextElement(selectedText.id, { fontWeight: parseInt(value) })}
-                                        >
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Select weight" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {fontWeights.map(weight => (
-                                                    <SelectItem key={weight} value={weight.toString()}>{weight}</SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                    <div>
-                                        <Label htmlFor="font-style">Font Style</Label>
-                                        <Select
-                                            value={selectedText.fontStyle}
-                                            onValueChange={(value) => updateTextElement(selectedText.id, { fontStyle: value })}
-                                        >
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Select style" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {fontStyles.map(style => (
-                                                    <SelectItem key={style} value={style}>{style}</SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                    <div>
-                                        <Label>Text Position X</Label>
-                                        <Slider
-                                            min={0}
-                                            max={image.width}
-                                            step={1}
-                                            value={[selectedText.position.x]}
-                                            onValueChange={(value) => updateTextElement(selectedText.id, { position: { ...selectedText.position, x: value[0] } })}
-                                        />
-                                        <div className="text-sm text-gray-500 mt-1">
-                                            {selectedText.position.x}px
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <Label>Text Position Y</Label>
-                                        <Slider
-                                            min={0}
-                                            max={image.height}
-                                            step={1}
-                                            value={[selectedText.position.y]}
-                                            onValueChange={(value) => updateTextElement(selectedText.id, { position: { ...selectedText.position, y: value[0] } })}
-                                        />
-                                        <div className="text-sm text-gray-500 mt-1">
-                                            {selectedText.position.y}px
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <Label>Text Rotation</Label>
-                                        <Slider
-                                            min={0}
-                                            max={360}
-                                            step={1}
-                                            value={[selectedText.rotation]}
-                                            onValueChange={(value) => updateTextElement(selectedText.id, { rotation: value[0] })}
-                                        />
-                                        <div className="text-sm text-gray-500 mt-1">
-                                            {selectedText.rotation}°
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <Label htmlFor="text-color">Text Color</Label>
-                                        <Input
-                                            id="text-color"
-                                            type="color"
-                                            value={selectedText.color}
-                                            onChange={(e) => updateTextElement(selectedText.id, { color: e.target.value })}
-                                        />
-                                    </div>
-                                    <Button variant="destructive" onClick={() => deleteTextElement(selectedText.id)}>
-                                        Delete Text
-                                    </Button>
-                                </>
+        <div className="container mx-auto p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card className="w-full">
+                    <CardHeader>
+                        <CardTitle>DepthScribe</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="mb-4 flex items-center space-x-2">
+                            <Input type="file" accept="image/*" onChange={handleImageUpload} ref={fileInputRef} />
+                            {image && (
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={handleRemoveFile}
+                                    aria-label="Remove file"
+                                >
+                                    <X className="h-4 w-4" />
+                                </Button>
                             )}
                         </div>
-                    </div>
-                )}
+                        <Dialog open={isLoading || saving}>
+                            <DialogContent className="bg-background/80 backdrop-blur-sm border-none shadow-none flex items-center justify-center">
+                                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                            </DialogContent>
+                        </Dialog>
+                        {image && (
+                            <div className="relative">
+                                <canvas ref={canvasRef} className="max-w-full h-auto border border-gray-300" />
+                                <div className="absolute top-2 right-2 flex space-x-2">
+                                    <Button onClick={saveImage} variant="default">Save Image</Button>
+                                </div>
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
+                <Card className="w-full">
+                    <CardHeader>
+                        <CardTitle>Text Management</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="space-y-4">
+                            <div className="flex gap-2">
+                                <Input
+                                    value={newText}
+                                    onChange={(e) => setNewText(e.target.value)}
+                                    placeholder="Enter new text"
+                                    className="flex-grow"
+                                />
+                                <Button onClick={addTextElement} variant="secondary">
+                                    Add Text
+                                </Button>
+                            </div>
+                            <Select
+                                value={selectedTextId?.toString() || ''}
+                                onValueChange={(value) => setSelectedTextId(Number(value))}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select text to edit" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {textElements.map(el => (
+                                        <SelectItem key={el.id} value={el.id.toString()}>
+                                            {el.text}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            {selectedText && (
+                                <Tabs defaultValue="styling" className="w-full">
+                                    <TabsList className="grid w-full grid-cols-3">
+                                        <TabsTrigger value="styling">Styling</TabsTrigger>
+                                        <TabsTrigger value="position">Position</TabsTrigger>
+                                        <TabsTrigger value="advanced">Advanced</TabsTrigger>
+                                    </TabsList>
+
+                                    <TabsContent value="styling">
+                                        <div className="space-y-4">
+                                            <div>
+                                                <Label>Font Family</Label>
+                                                <Select
+                                                    value={selectedText.fontFamily}
+                                                    onValueChange={(value) => updateTextElement(selectedText.id, { fontFamily: value })}
+                                                >
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Select font" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        {fontFamilies.map(font => (
+                                                            <SelectItem key={font} value={font} style={{ fontFamily: font }}>
+                                                                {font}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                            <div>
+                                                <Label>Font Size</Label>
+                                                <Slider
+                                                    min={12}
+                                                    max={getMaxFontSize()}
+                                                    step={1}
+                                                    value={[selectedText.fontSize]}
+                                                    onValueChange={(value) => updateTextElement(selectedText.id, { fontSize: value[0] })}
+                                                />
+                                                <div className="text-sm text-gray-500 mt-1">
+                                                    {selectedText.fontSize}px
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <Label>Color</Label>
+                                                <Input
+                                                    type="color"
+                                                    value={selectedText.color}
+                                                    onChange={(e) => updateTextElement(selectedText.id, { color: e.target.value })}
+                                                />
+                                            </div>
+                                        </div>
+                                    </TabsContent>
+
+                                    <TabsContent value="position">
+                                        <div className="space-y-4">
+                                            <div>
+                                                <Label>Position X</Label>
+                                                <Slider
+                                                    min={0}
+                                                    max={image ? image.width : 100}
+                                                    step={1}
+                                                    value={[selectedText.position.x]}
+                                                    onValueChange={(value) => updateTextElement(selectedText.id, { position: { ...selectedText.position, x: value[0] } })}
+                                                />
+                                                <div className="text-sm text-gray-500 mt-1">
+                                                    {selectedText.position.x}px
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <Label>Position Y</Label>
+                                                <Slider
+                                                    min={0}
+                                                    max={image ? image.height : 100}
+                                                    step={1}
+                                                    value={[selectedText.position.y]}
+                                                    onValueChange={(value) => updateTextElement(selectedText.id, { position: { ...selectedText.position, y: value[0] } })}
+                                                />
+                                                <div className="text-sm text-gray-500 mt-1">
+                                                    {selectedText.position.y}px
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <Label>Rotation</Label>
+                                                <Slider
+                                                    min={0}
+                                                    max={360}
+                                                    step={1}
+                                                    value={[selectedText.rotation]}
+                                                    onValueChange={(value) => updateTextElement(selectedText.id, { rotation: value[0] })}
+                                                />
+                                                <div className="text-sm text-gray-500 mt-1">
+                                                    {selectedText.rotation}°
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </TabsContent>
+
+                                    <TabsContent value="advanced">
+                                        <div className="space-y-4">
+                                            <div>
+                                                <Label>Opacity</Label>
+                                                <Slider
+                                                    min={0}
+                                                    max={1}
+                                                    step={0.05}
+                                                    value={[selectedText.opacity]}
+                                                    onValueChange={(value) => updateTextElement(selectedText.id, { opacity: value[0] })}
+                                                />
+                                                <div className="text-sm text-gray-500 mt-1">
+                                                    {selectedText.opacity}
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <Label>Font Weight</Label>
+                                                <Select
+                                                    value={selectedText.fontWeight.toString()}
+                                                    onValueChange={(value) => updateTextElement(selectedText.id, { fontWeight: parseInt(value) })}
+                                                >
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Select weight" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        {fontWeights.map(weight => (
+                                                            <SelectItem key={weight} value={weight.toString()}>
+                                                                {weight}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                            <div>
+                                                <Label>Font Style</Label>
+                                                <Select
+                                                    value={selectedText.fontStyle}
+                                                    onValueChange={(value) => updateTextElement(selectedText.id, { fontStyle: value })}
+                                                >
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Select style" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        {fontStyles.map(style => (
+                                                            <SelectItem key={style} value={style}>
+                                                                {style}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                            <Button
+                                                variant="destructive"
+                                                onClick={() => deleteTextElement(selectedText.id)}
+                                                className="w-full mt-4"
+                                            >
+                                                Delete Text
+                                            </Button>
+                                        </div>
+                                    </TabsContent>
+                                </Tabs>
+                            )}
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
         </div>
-    )
+    );
 }

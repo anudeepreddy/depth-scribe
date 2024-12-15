@@ -67,9 +67,11 @@ export class LayeredCanvas {
     textElements.forEach(({ text, fontSize, fontFamily, fontWeight, fontStyle, opacity, position, color, rotation }) => {
       ctx.save()
       ctx.globalAlpha = opacity
+      ctx.textAlign = 'center'
+      ctx.textBaseline = 'middle'
+      ctx.font = `${fontStyle} ${fontWeight} ${fontSize}px ${fontFamily}`
       ctx.translate(position.x, position.y)
       ctx.rotate(rotation * Math.PI / 180)
-      ctx.font = `${fontStyle} ${fontWeight} ${fontSize}px ${fontFamily}`
       ctx.fillStyle = color
       ctx.fillText(text, 0, 0)
       
@@ -97,21 +99,3 @@ export class LayeredCanvas {
     });
   }
 }
-
-
-// // Usage
-// const layeredCanvas = new LayeredCanvas(canvasRef.current as HTMLCanvasElement);
-
-// // Update individual layers without full redraw
-// layeredCanvas.renderBackground(backgroundImage);
-// layeredCanvas.renderText([
-//   { text: textOverlay1, style: textStyle1 },
-//   { text: textOverlay2, style: textStyle2 }
-// ]);
-// layeredCanvas.renderSubject(extractedSubject);
-
-// // Later, update just the text position
-// layeredCanvas.renderText([
-//   { text: textOverlay1, style: { ...textStyle1, position: { x: newX1, y: newY1 } } },
-//   { text: textOverlay2, style: { ...textStyle2, position: { x: newX2, y: newY2 } } }
-// ]);
